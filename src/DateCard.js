@@ -11,8 +11,7 @@ const DateCardWrapper = styled.div`
   flex-direction: column;
   overflow: hidden;
   flex: 1;
-  margin: 10px;
-  border-radius: 5px;
+  margin: 5px;
   box-shadow: 0px 2px 6px -1px rgba(133, 131, 133, 1);
   transition: transform 0.6s;
   ${props =>
@@ -26,7 +25,6 @@ const Image = styled.img`
   flex: 1;
   object-fit: cover;
   max-width: 100%;
-  filter: blur(10px);
 `;
 
 const BottomInfo = styled.div`

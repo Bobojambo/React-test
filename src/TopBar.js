@@ -7,6 +7,7 @@ const TopBarWrapper = styled.div`
   position: relative;
   justify-content: center;
   display: flex;
+  box-shadow: 0 4px 2px -2px gray;
 `;
 
 const TinderLogo = styled.img`

@@ -19,7 +19,7 @@ const Button = styled.button`
   text-align: center;
   vertical-align: middle;
   line-height: 60px;
-  box-shadow: 0px 0px 10px -1px rgba(133, 131, 133, 1);
+  box-shadow: 0px 0px 4px -1px rgba(133, 131, 133, 1);
   font-size: 26px;
 `;
 

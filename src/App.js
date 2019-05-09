@@ -3,6 +3,8 @@ import styled, { createGlobalStyle } from "styled-components";
 import TopBar from "./TopBar";
 import { DateCard } from "./DateCard";
 import { Buttons } from "./Buttons";
+import * as ReactRedux from "react-redux";
+import { swipeRight, swipeLeft, reset, fetchRandomUser } from "./redux";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -41,27 +43,31 @@ const PhoneDisplayWrapper = styled.div`
   overflow: hidden;
 `;
 
-function App() {
-  const [swipeStatus, setSwipeStatus] = React.useState("INITIAL");
-  const [response, setResponse] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+const mapStateToProps = (state: State) => ({
+  swipeStatus: state.swipeStatus,
+  response: state.response
+});
+
+const mapDispatchToProps = dispatch => ({
+  swipeRight: () => dispatch(swipeRight()),
+  swipeLeft: () => dispatch(swipeLeft()),
+  reset: () => dispatch(reset()),
+  fetchRandomUser: () => dispatch(fetchRandomUser())
+});
+
+function App(props) {
+  const { swipeStatus } = props;
 
   React.useEffect(() => {
-    if (swipeStatus === "CENTER") {
+    if (props.swipeStatus === "CENTER") {
       return;
     }
 
     setTimeout(() => {
-      setLoading(true);
-
-      fetch("https://randomuser.me/api/")
-        .then(response => response.json())
-        .then(json => {
-          setResponse(json.results[0]);
-          setSwipeStatus("CENTER");
-          setLoading(false);
-        });
-    }, 600);
+      //setLoading(true);
+      props.fetchRandomUser();
+      props.reset();
+    }, 300);
   }, [swipeStatus]);
 
   return (
@@ -69,23 +75,23 @@ function App() {
       <GlobalStyle />
       <PhoneDisplayWrapper>
         <TopBar />
-        {loading || !response ? (
+        {!props.response ? (
           <div style={{ flex: 1 }} />
         ) : (
           <DateCard
-            imageUrl={response.picture.thumbnail}
-            name={response.name.first}
-            age={response.dob.age}
-            swipeStatus={swipeStatus}
+            imageUrl={props.response.picture.large}
+            name={props.response.name.first}
+            age={props.response.dob.age}
+            swipeStatus={props.swipeStatus}
           />
         )}
         <Buttons
-          onAccept={() => setSwipeStatus("RIGHT")}
-          onDecline={() => setSwipeStatus("LEFT")}
+          onAccept={() => props.swipeRight()}
+          onDecline={() => props.swipeLeft()}
         />
       </PhoneDisplayWrapper>
     </IPhoneBackground>
   );
 }
 
-export default App;
+export default ReactRedux.connect(mapStateToProps, mapDispatchToProps)(App);
