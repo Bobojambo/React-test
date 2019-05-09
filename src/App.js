@@ -1,5 +1,8 @@
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
+import TopBar from "./TopBar";
+import { DateCard } from "./DateCard";
+import { Buttons } from "./Buttons";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -38,39 +41,51 @@ const PhoneDisplayWrapper = styled.div`
   overflow: hidden;
 `;
 
-const App = () => {
-  const cardStatus = "CENTER";
-  const loading = false;
-  const response = {
-    picture: {
-      large: "https://randomuser.me/api/portraits/men/34.jpg"
-    },
-    name: { first: "Pena" },
-    dob: { age: 50 }
-  };
+function App() {
+  const [swipeStatus, setSwipeStatus] = React.useState("INITIAL");
+  const [response, setResponse] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (swipeStatus === "CENTER") {
+      return;
+    }
+
+    setTimeout(() => {
+      setLoading(true);
+
+      fetch("https://randomuser.me/api/")
+        .then(response => response.json())
+        .then(json => {
+          setResponse(json.results[0]);
+          setSwipeStatus("CENTER");
+          setLoading(false);
+        });
+    }, 600);
+  }, [swipeStatus]);
 
   return (
     <IPhoneBackground>
       <GlobalStyle />
       <PhoneDisplayWrapper>
         <TopBar />
-        {loading || response == null ? (
-          <Loading />
+        {loading || !response ? (
+          <div style={{ flex: 1 }} />
         ) : (
           <DateCard
-            imageUrl={response.picture.large}
+            imageUrl={response.picture.thumbnail}
             name={response.name.first}
             age={response.dob.age}
-            cardStatus={cardStatus}
+            swipeStatus={swipeStatus}
           />
         )}
         <Buttons
-          onAccept={() => console.log("Accept!") /* setCardStatus("RIGHT") */}
-          onDecline={() => console.log("Decline!") /* setCardStatus("LEFT") */}
+          onAccept={() => setSwipeStatus("RIGHT")}
+          onDecline={() => setSwipeStatus("LEFT")}
         />
       </PhoneDisplayWrapper>
     </IPhoneBackground>
   );
-};
+}
 
 export default App;
